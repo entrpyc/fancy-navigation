@@ -152,6 +152,7 @@ class Navigation extends Controls {
         dragSpeed: 1,
         leftArrowSelector: '.fancy-nav-left',
         rightArrowSelector: '.fancy-nav-right',
+        scrollToSection: false,
         onAnchorChange: () => { },
         onMount: () => { },
         onSectionReached: () => { },
@@ -305,11 +306,6 @@ class Navigation extends Controls {
         if (!section)
             return
 
-        if(this.currentSection !== section) {
-            this.props.onSectionReached(section)
-            this.currentSection = section
-        }
-
         this.disableScrollHandler = true;
 
         let scrollTimeout;
@@ -318,6 +314,10 @@ class Navigation extends Controls {
             clearTimeout(scrollTimeout);
 
             scrollTimeout = setTimeout(() => {
+                if (this.currentSection !== section) {
+                    this.props.onSectionReached(section)
+                    this.currentSection = section
+                }
                 this.disableScrollHandler = false;
                 window.removeEventListener('scroll', checkIfScrollEnded)
             }, 100);
@@ -325,7 +325,17 @@ class Navigation extends Controls {
 
         window.addEventListener('scroll', checkIfScrollEnded);
 
-        section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (this.props.scrollToSection) {
+            this.props.scrollToSection(this, section)
+            return
+        }
+        
+        if (!section.scrollIntoView) {
+            document.documentElement.scrollTop = section.offsetTop;
+            return
+        }
+
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     /**
