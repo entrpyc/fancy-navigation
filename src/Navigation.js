@@ -177,4 +177,4 @@ class Navigation extends Controls {
     }
 }
 
-export default Navigation
+window.Navigation = Navigation

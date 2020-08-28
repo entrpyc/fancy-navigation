@@ -1,4 +1,4 @@
-import Navigation from "./src/Navigation";
+import "./src/Navigation";
 
 const nav = new Navigation({
     selector: '#navigation',
