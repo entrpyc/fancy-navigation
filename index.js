@@ -35,6 +35,9 @@ class Navigation extends Controls {
 
     anchors = null;
     nav = null;
+    navScrollWidth = 0;
+
+    initial = true;
 
     selectedAnchor = null;
 
@@ -52,12 +55,14 @@ class Navigation extends Controls {
         const anchors = document.querySelectorAll(`${selector} ${itemSelector}`);
         this.anchors = anchors.length && [...anchors];
         this.nav = document.querySelector(selector)
+        this.navScrollWidth = this.nav.scrollWidth
 
         // bind 
         this.mount = this.mount.bind(this);
         this.unmount = this.unmount.bind(this);
         this.changeAnchor = this.changeAnchor.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
+        this.animateNav = this.animateNav.bind(this);
     }
 
     /**
@@ -71,12 +76,9 @@ class Navigation extends Controls {
             return;
         }
 
-        this.changeAnchor(this.anchors[0])
-
         if (withControl) {
             this.mountControl();
         }
-
 
         window.addEventListener('scroll', this.handleScroll);
     }
@@ -91,22 +93,36 @@ class Navigation extends Controls {
     /**
      * Handle anchor change
      */
-    changeAnchor(anchor) {
+    changeAnchor(anchor, withAnimation = !this.initial) {
         if (!anchor) return;
 
         this.selectedAnchor = anchor
 
         const { selectedAnchorClass } = this.props
 
+        // get the left position
+        let left = anchor.offsetLeft + (anchor.offsetWidth / 2) - (this.nav.offsetWidth / 2);
+        left = Math.max(left, 0);
+        left = Math.min(left, this.navScrollWidth - this.nav.offsetWidth)
+
         this.anchors.map(anchor => {
             anchor.classList.remove(selectedAnchorClass)
+
+            // set transition
+            if (!withAnimation) {
+                anchor.style.transition = '';
+            } else {
+                anchor.style.transition = 'transform 0.3s ease';
+            }
+
+            // set left position
+            anchor.style.transform = `translateX(-${left}px)`;
         })
 
+        // add selected class to the new anchor
         anchor.classList.add(selectedAnchorClass)
 
-        const left = anchor.offsetLeft + (anchor.offsetWidth / 2) - (this.nav.offsetWidth / 2);
-
-        this.nav.scrollLeft = left
+        this.initial = false 
     }
 
     /**
@@ -143,8 +159,6 @@ class Navigation extends Controls {
 
         return checkTopBound && checkBottomBound;
     }
-
-
 }
 
 const nav = new Navigation({
