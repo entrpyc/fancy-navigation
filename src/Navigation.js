@@ -68,7 +68,17 @@ class Navigation extends Controls {
      * Remove event listeners
      */
     unmount() {
+        const { withControl, withDraggable } = this.props;
+
         window.removeEventListener('scroll', this.handleScroll)
+
+        if (withControl) {
+            this.unmountControl();
+        }
+
+        if(withDraggable) {
+            this.unmountDraggble();
+        }
     }
 
     /**
