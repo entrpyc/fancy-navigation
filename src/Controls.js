@@ -8,12 +8,20 @@ class Controls extends Draggable {
     }
 
     onLeft() {
-        this.changeAnchor(this.selectedAnchor.previousElementSibling)
+        this.move('previousElementSibling')
     }
 
     onRight() {
-        console.log(this.selectedAnchor)
-        this.changeAnchor(this.selectedAnchor.nextElementSibling)
+        this.move('nextElementSibling')
+    }
+
+    move(prop) {
+        if(!this.selectedAnchor) {
+            this.changeAnchor(this.anchors[0])
+            return
+        }
+        
+        this.changeAnchor(this.selectedAnchor[prop])
     }
 
     mountControl() {

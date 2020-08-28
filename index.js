@@ -4,6 +4,7 @@ const nav = new Navigation({
     selector: '#navigation',
     itemSelector: '.anchor',
     withControl: true,
+    withDraggable: true,
     anchorAnimationEase: 'ease',
     anchorAnimationDuration: '0.3s'
 });

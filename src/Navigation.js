@@ -44,7 +44,7 @@ class Navigation extends Controls {
      * Bind event listeners
      */
     mount() {
-        const { withControl } = this.props;
+        const { withControl, withDraggable } = this.props;
 
         if (!this.anchors) {
             console.error('Navigation anchors not found');
@@ -53,6 +53,10 @@ class Navigation extends Controls {
 
         if (withControl) {
             this.mountControl();
+        }
+
+        if(withDraggable) {
+            this.mountDraggble();
         }
 
         window.addEventListener('scroll', this.handleScroll);

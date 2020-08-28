@@ -115,6 +115,10 @@ ul li + li {
   overflow: hidden;
 }
 
+.fancy-nav-dragg-active li {
+  opacity: 0.8;
+}
+
 .fancy-nav-selected {
   background-color: yellowgreen;
 }
