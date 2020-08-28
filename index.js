@@ -62,7 +62,6 @@ class Navigation extends Controls {
         this.unmount = this.unmount.bind(this);
         this.changeAnchor = this.changeAnchor.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
-        this.animateNav = this.animateNav.bind(this);
     }
 
     /**
