@@ -6,7 +6,9 @@ class Navigation extends Controls {
         itemSelector: '.fancy-nav-item',
         selectedAnchorClass: 'fancy-nav-selected',
         anchorAnimationEase: 'ease',
-        anchorAnimationDuration: '0.3s'
+        anchorAnimationDuration: '0.3s',
+        dragActiveClass: 'fancy-nav-drag-active',
+        dragSpeed: 1
     }
 
     anchors = null;

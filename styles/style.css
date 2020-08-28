@@ -115,7 +115,7 @@ ul li + li {
   overflow: hidden;
 }
 
-.fancy-nav-dragg-active li {
+.fancy-nav-drag-active li {
   opacity: 0.8;
 }
 

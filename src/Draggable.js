@@ -59,22 +59,25 @@ class Draggable {
 
     handleMouseUp() {
         this.isMouseDown = false;
-        this.nav.classList.remove('fancy-nav-dragg-active')
+        this.nav.classList.remove(this.props.dragActiveClass)
         this.disableAnchorsClick(true)
     }
 
     handleMouseMove(e) {
         if (!this.isMouseDown) return;
 
+        const { dragSpeed, dragActiveClass } = this.props
+
         const moved = this.startMouseX - e.pageX;
 
         if(moved > 50 || moved < 50) {
-            this.nav.classList.add('fancy-nav-dragg-active')
+            this.nav.classList.add(dragActiveClass)
             
             this.disableAnchorsClick();
         }
         
         let x = moved + this.startScrollX;
+        x = x * dragSpeed;
 
         x = Math.max(x, 0);
         x = Math.min(x, this.navScrollWidth - this.nav.offsetWidth);
