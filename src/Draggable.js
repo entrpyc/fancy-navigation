@@ -32,7 +32,10 @@ class Draggable {
     }
 
     unmountDraggble() {
-
+        this.nav.removeEventListener('mousedown', this.handleMouseDown);
+        this.nav.removeEventListener('mouseleave', this.handleMouseLeave);
+        document.removeEventListener('mouseup', this.handleMouseUp);
+        document.removeEventListener('mousemove', this.handleMouseMove)
     }
 
     handleMouseDown(e) {
