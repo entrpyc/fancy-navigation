@@ -8,7 +8,10 @@ class Navigation extends Controls {
         anchorAnimationEase: 'ease',
         anchorAnimationDuration: '0.3s',
         dragActiveClass: 'fancy-nav-drag-active',
-        dragSpeed: 1
+        dragSpeed: 1,
+        onAnchorChange: () => { },
+        onMount: () => { },
+        onSectionReached: () => { },
     }
 
     anchors = null;
@@ -18,6 +21,8 @@ class Navigation extends Controls {
     initial = true;
 
     selectedAnchor = null;
+
+    currentSection = null;
 
     constructor(props) {
         super(props);
@@ -57,11 +62,13 @@ class Navigation extends Controls {
             this.mountControl();
         }
 
-        if(withDraggable) {
+        if (withDraggable) {
             this.mountDraggble();
         }
 
         window.addEventListener('scroll', this.handleScroll);
+
+        this.props.onMount();
     }
 
     /**
@@ -76,7 +83,7 @@ class Navigation extends Controls {
             this.unmountControl();
         }
 
-        if(withDraggable) {
+        if (withDraggable) {
             this.unmountDraggble();
         }
     }
@@ -87,9 +94,12 @@ class Navigation extends Controls {
     changeAnchor(anchor, withAnimation = !this.initial) {
         if (!anchor) return;
 
-        this.selectedAnchor = anchor
-
-        const { selectedAnchorClass, anchorAnimationEase, anchorAnimationDuration } = this.props
+        const {
+            selectedAnchorClass,
+            anchorAnimationEase,
+            anchorAnimationDuration,
+            onAnchorChange
+        } = this.props
 
         // get the left position
         let left = anchor.offsetLeft + (anchor.offsetWidth / 2) - (this.nav.offsetWidth / 2);
@@ -113,7 +123,12 @@ class Navigation extends Controls {
         // add selected class to the new anchor
         anchor.classList.add(selectedAnchorClass)
 
-        this.initial = false 
+        this.initial = false
+
+        if(this.selectedAnchor !== anchor)
+            onAnchorChange(anchor)
+
+        this.selectedAnchor = anchor
     }
 
     /**
@@ -138,7 +153,7 @@ class Navigation extends Controls {
         const _windowScrollPosition = document.documentElement.scrollTop;
 
         const section = document.querySelector(anchor.dataset.section);
-
+        
         if (!section)
             return console.error('Section not found');
 
@@ -148,7 +163,17 @@ class Navigation extends Controls {
         let checkTopBound = _windowScrollPosition + _windowHeight / 5 > sectionTopPosition;
         let checkBottomBound = _windowScrollPosition + _windowHeight / 3 < sectionBottomPosition;
 
-        return checkTopBound && checkBottomBound;
+        const result = checkTopBound && checkBottomBound;
+
+        if(result && this.currentSection !== section) {
+            this.props.onSectionReached(section)
+        }
+
+        if(result) {
+            this.currentSection = section
+        }
+
+        return result;
     }
 }
 
