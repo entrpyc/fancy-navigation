@@ -21,7 +21,7 @@ class Draggable {
         this.nav.addEventListener('mouseleave', this.handleMouseLeave);
 
         /**
-         * Stop dragg on mouse up
+         * Stop drag on mouse up
          */
         document.addEventListener('mouseup', this.handleMouseUp);
 
