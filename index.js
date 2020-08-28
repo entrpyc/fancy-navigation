@@ -30,7 +30,9 @@ class Navigation extends Controls {
     props = {
         selector: '.fancy-nav',
         itemSelector: '.fancy-nav-item',
-        selectedAnchorClass: 'fancy-nav-selected'
+        selectedAnchorClass: 'fancy-nav-selected',
+        anchorAnimationEase: 'ease',
+        anchorAnimationDuration: '0.3s'
     }
 
     anchors = null;
@@ -97,7 +99,7 @@ class Navigation extends Controls {
 
         this.selectedAnchor = anchor
 
-        const { selectedAnchorClass } = this.props
+        const { selectedAnchorClass, anchorAnimationEase, anchorAnimationDuration } = this.props
 
         // get the left position
         let left = anchor.offsetLeft + (anchor.offsetWidth / 2) - (this.nav.offsetWidth / 2);
@@ -111,7 +113,7 @@ class Navigation extends Controls {
             if (!withAnimation) {
                 anchor.style.transition = '';
             } else {
-                anchor.style.transition = 'transform 0.3s ease';
+                anchor.style.transition = `transform ${anchorAnimationDuration} ${anchorAnimationEase}`;
             }
 
             // set left position
@@ -163,7 +165,9 @@ class Navigation extends Controls {
 const nav = new Navigation({
     selector: '#navigation',
     itemSelector: '.anchor',
-    withControl: true
+    withControl: true,
+    anchorAnimationEase: 'ease',
+    anchorAnimationDuration: '0.3s'
 });
 
 nav.mount();
