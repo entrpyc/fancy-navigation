@@ -1,4 +1,143 @@
-import Controls from "./Controls";
+class Draggable {
+    isMouseDown = null;
+    startMouseX;
+    startScrollX;
+
+    constructor() {
+        this.mountDraggble = this.mountDraggble.bind(this)
+        this.unmountDraggble = this.unmountDraggble.bind(this)
+        this.handleMouseDown = this.handleMouseDown.bind(this)
+        this.handleMouseUp = this.handleMouseUp.bind(this)
+        this.handleMouseMove = this.handleMouseMove.bind(this)
+        this.disableAnchorsClick = this.disableAnchorsClick.bind(this)
+    }
+
+    mountDraggble() {
+        this.nav.addEventListener('mousedown', this.handleMouseDown);
+
+        /**
+         * Stop scroll on mouse leave
+         */
+        this.nav.addEventListener('mouseleave', this.handleMouseLeave);
+
+        /**
+         * Stop drag on mouse up
+         */
+        document.addEventListener('mouseup', this.handleMouseUp);
+
+        /**
+         * On mouse move
+         */
+        document.addEventListener('mousemove', this.handleMouseMove)
+    }
+
+    unmountDraggble() {
+        this.nav.removeEventListener('mousedown', this.handleMouseDown);
+        this.nav.removeEventListener('mouseleave', this.handleMouseLeave);
+        document.removeEventListener('mouseup', this.handleMouseUp);
+        document.removeEventListener('mousemove', this.handleMouseMove)
+    }
+
+    handleMouseDown(e) {
+        this.isMouseDown = true
+
+        this.anchors.map(anchor => {
+            anchor.style.transition = ''
+        })
+
+        const anchor = this.anchors[0];
+
+        let left = anchor.style.transform;
+
+        if (left) {
+            left = left.replace('translateX(0px)', '0')
+            left = left.replace('translateX(-0px)', '0')
+            left = left.replace('translateX(-', '')
+            left = left.replace('px)', '')
+        }
+
+        this.startScrollX = +left || 0
+        this.startMouseX = e.pageX;
+    }
+
+    handleMouseUp() {
+        this.isMouseDown = false;
+        this.nav.classList.remove(this.props.dragActiveClass)
+        this.disableAnchorsClick(true)
+    }
+
+    handleMouseMove(e) {
+        if (!this.isMouseDown) return;
+
+        const { dragSpeed, dragActiveClass } = this.props
+
+        const moved = this.startMouseX - e.pageX;
+
+        if (moved > 50 || moved < 50) {
+            this.nav.classList.add(dragActiveClass)
+
+            this.disableAnchorsClick();
+        }
+
+        let x = moved + this.startScrollX;
+        x = x * dragSpeed;
+
+        x = Math.max(x, 0);
+        x = Math.min(x, this.navScrollWidth - this.nav.offsetWidth);
+
+        this.anchors.map(anchor => {
+            anchor.style.transform = `translateX(-${x}px)`
+        })
+    }
+
+    disableAnchorsClick(removeListener = false) {
+        this.anchors.forEach(anchor => {
+            if (removeListener) {
+                anchor.style.pointerEvents = 'all'
+                return
+            }
+
+            anchor.style.pointerEvents = 'none'
+        })
+    }
+}
+
+class Controls extends Draggable {
+    constructor(props) {
+        super(props);
+        this.onLeft = this.onLeft.bind(this);
+        this.onRight = this.onRight.bind(this);
+    }
+
+    onLeft() {
+        this.move('previousElementSibling')
+    }
+
+    onRight() {
+        this.move('nextElementSibling')
+    }
+
+    move(prop) {
+        if (!this.selectedAnchor) {
+            this.changeAnchor(this.anchors[0])
+            return
+        }
+
+        this.changeAnchor(this.selectedAnchor[prop])
+    }
+
+    mountControl() {
+        document.querySelector('.buttons .left').addEventListener('click', this.onLeft)
+
+        document.querySelector('.buttons .right').addEventListener('click', this.onRight)
+    }
+
+    unmountControl() {
+        document.querySelector('.buttons .left').removeEventListener('click', this.onLeft)
+
+        document.querySelector('.buttons .right').removeEventListener('click', this.onRight)
+    }
+}
 
 class Navigation extends Controls {
     props = {
@@ -125,7 +264,7 @@ class Navigation extends Controls {
 
         this.initial = false
 
-        if(this.selectedAnchor !== anchor)
+        if (this.selectedAnchor !== anchor)
             onAnchorChange(anchor)
 
         this.selectedAnchor = anchor
@@ -153,7 +292,7 @@ class Navigation extends Controls {
         const _windowScrollPosition = document.documentElement.scrollTop;
 
         const section = document.querySelector(anchor.dataset.section);
-        
+
         if (!section)
             return console.error('Section not found');
 
@@ -165,11 +304,11 @@ class Navigation extends Controls {
 
         const result = checkTopBound && checkBottomBound;
 
-        if(result && this.currentSection !== section) {
+        if (result && this.currentSection !== section) {
             this.props.onSectionReached(section)
         }
 
-        if(result) {
+        if (result) {
             this.currentSection = section
         }
 

@@ -5,16 +5,18 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server --watch --info-verbosity verbose",
-    "build": "env NODE_ENV=production webpack --mode=production"
+    "build": "babel --out-dir out ./src/Navigation.min.js --presets=@babel/preset-env,minify --plugins=@babel/plugin-transform-classes,@babel/plugin-proposal-class-properties,remove-comments"
   },
   "author": "zazi i asi",
   "license": "MIT",
   "devDependencies": {
+    "@babel/cli": "^7.10.5",
     "@babel/core": "^7.11.4",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/plugin-transform-classes": "^7.10.4",
     "@babel/preset-env": "^7.11.0",
     "babel-loader": "^8.1.0",
+    "babel-minify": "^0.5.1",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "clean-webpack-plugin": "^3.0.0",
     "html-webpack-plugin": "^4.3.0",
@@ -22,6 +24,7 @@
     "webpack-livereload-plugin": "^2.3.0"
   },
   "dependencies": {
+    "babel-plugin-remove-comments": "^2.0.0",
     "lodash": "^4.17.20",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"
