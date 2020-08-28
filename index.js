@@ -7,6 +7,8 @@ const nav = new Navigation({
     withDraggable: true,
     anchorAnimationEase: 'ease',
     anchorAnimationDuration: '0.3s',
+    leftArrowSelector: '.buttons .left',
+    rightArrowSelector: '.buttons .right',
     onAnchorChange: (anchor) => {
         console.log('Anchor Changed')
     },

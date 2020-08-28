@@ -123,19 +123,21 @@ class Controls extends Draggable {
             return
         }
 
-        this.changeAnchor(this.selectedAnchor[prop])
+        this.changeAnchor(this.selectedAnchor[prop], true, true)
     }
 
     mountControl() {
-        document.querySelector('.buttons .left').addEventListener('click', this.onLeft)
+        const { leftArrowSelector, rightArrowSelector } = this.props
 
-        document.querySelector('.buttons .right').addEventListener('click', this.onRight)
+        document.querySelector(leftArrowSelector).addEventListener('click', this.onLeft)
+        document.querySelector(rightArrowSelector).addEventListener('click', this.onRight)
     }
 
     unmountControl() {
-        document.querySelector('.buttons .left').removeEventListener('click', this.onLeft)
+        const { leftArrowSelector, rightArrowSelector } = this.props
 
-        document.querySelector('.buttons .right').removeEventListener('click', this.onRight)
+        document.querySelector(leftArrowSelector).removeEventListener('click', this.onLeft)
+        document.querySelector(rightArrowSelector).removeEventListener('click', this.onRight)
     }
 }
 
@@ -148,6 +150,8 @@ class Navigation extends Controls {
         anchorAnimationDuration: '0.3s',
         dragActiveClass: 'fancy-nav-drag-active',
         dragSpeed: 1,
+        leftArrowSelector: '.fancy-nav-left',
+        rightArrowSelector: '.fancy-nav-right',
         onAnchorChange: () => { },
         onMount: () => { },
         onSectionReached: () => { },
@@ -162,6 +166,8 @@ class Navigation extends Controls {
     selectedAnchor = null;
 
     currentSection = null;
+
+    disableScrollHandler = false;
 
     constructor(props) {
         super(props);
@@ -205,6 +211,10 @@ class Navigation extends Controls {
             this.mountDraggble();
         }
 
+        this.anchors.map(anchor => {
+            anchor.addEventListener('click', () => this.changeAnchor(anchor, true, true))
+        })
+
         window.addEventListener('scroll', this.handleScroll);
 
         this.props.onMount();
@@ -230,7 +240,7 @@ class Navigation extends Controls {
     /**
      * Handle anchor change
      */
-    changeAnchor(anchor, withAnimation = !this.initial) {
+    changeAnchor(anchor, withAnimation = !this.initial, scrollToSection = false) {
         if (!anchor) return;
 
         const {
@@ -268,12 +278,19 @@ class Navigation extends Controls {
             onAnchorChange(anchor)
 
         this.selectedAnchor = anchor
+
+        if (scrollToSection) {
+            const section = document.querySelector(anchor.dataset.section);
+            this.scrollToSection(section);
+        }
     }
 
     /**
      * Handle scroll
      */
     handleScroll() {
+        if (this.disableScrollHandler) return;
+
         for (let anchor of this.anchors) {
             const result = this.detectIfSectionIsInViewport(anchor);
 
@@ -282,6 +299,33 @@ class Navigation extends Controls {
                 break;
             }
         }
+    }
+
+    scrollToSection(section) {
+        if (!section)
+            return
+
+        if(this.currentSection !== section) {
+            this.props.onSectionReached(section)
+            this.currentSection = section
+        }
+
+        this.disableScrollHandler = true;
+
+        let scrollTimeout;
+
+        const checkIfScrollEnded = () => {
+            clearTimeout(scrollTimeout);
+
+            scrollTimeout = setTimeout(() => {
+                this.disableScrollHandler = false;
+                window.removeEventListener('scroll', checkIfScrollEnded)
+            }, 100);
+        }
+
+        window.addEventListener('scroll', checkIfScrollEnded);
+
+        section.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     /**
