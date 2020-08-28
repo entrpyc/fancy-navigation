@@ -1,7 +1,6 @@
 import Controls from "./Controls";
-import Draggable from "./Draggable";
 
-class Navigation extends Controls, Draggable {
+class Navigation extends Controls {
     props = {
         selector: '.fancy-nav',
         itemSelector: '.fancy-nav-item',

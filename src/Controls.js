@@ -1,5 +1,8 @@
-class Controls {
-    constructor() {
+import Draggable from "./Draggable";
+
+class Controls extends Draggable {
+    constructor(props) {
+        super(props);
         this.onLeft = this.onLeft.bind(this);
         this.onRight = this.onRight.bind(this);
     }
