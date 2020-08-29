@@ -32,7 +32,7 @@ let config = {
   },
   plugins: [
     new LiveReloadPlugin(),
-    new CleanWebpackPlugin(),
+    // new CleanWebpackPlugin(),
   ]
 };
 
