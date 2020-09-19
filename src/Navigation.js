@@ -202,6 +202,9 @@
             onSectionReached: () => { },
         }
 
+        // is the navigation mounted
+        mounted = false;
+
         // navigation achors (array of dom elements)
         anchors = null;
 
@@ -256,6 +259,8 @@
         mount() {
             const { withControl, withDraggable } = this.props;
 
+            this.mounted = true;
+
             if (!this.anchors) {
                 console.error('Navigation anchors not found');
                 return;
@@ -293,6 +298,8 @@
             if (withDraggable) {
                 this.unmountDraggble();
             }
+
+            this.mounted = false;
         }
 
         /**
@@ -303,7 +310,7 @@
          * @param {boolean} scrollToSection 
          */
         changeAnchor(anchor, withAnimation = !this.initial, scrollToSection = false) {
-            if (!anchor) return;
+            if (!anchor || !this.mounted) return;
 
             const {
                 selectedAnchorClass,
@@ -396,7 +403,7 @@
 
             window.addEventListener('scroll', checkIfScrollEnded);
 
-            scrollToSection(this, section)
+            scrollToSection(section)
         }
 
         /**
