@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server --watch --info-verbosity verbose",
-    "build": "babel --out-file out/Navigation.min.js ./src/Navigation.js --presets=@babel/preset-env,minify --plugins=@babel/plugin-transform-classes,@babel/plugin-proposal-class-properties,remove-comments"
+    "build-min": "babel --out-file out/Navigation.min.js ./src/Navigation.js --presets=@babel/preset-env,minify --plugins=@babel/plugin-transform-classes,@babel/plugin-proposal-class-properties,remove-comments",
+    "build": "npm run build-min && npm run build-normal",
+    "build-normal": "cp ./src/Navigation.js ./out/Navigation.js"
   },
   "author": "zazi i asi",
   "license": "MIT",
