@@ -21,6 +21,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             console.log('Section Reached')
         },
     });
+    
     nav.mount();
 });
 

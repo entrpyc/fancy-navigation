@@ -189,7 +189,14 @@
             dragSpeed: 1,
             leftArrowSelector: '.fancy-nav-left',
             rightArrowSelector: '.fancy-nav-right',
-            scrollToSection: false,
+            scrollToSection: (section) => {
+                if (!section.scrollIntoView) {
+                    document.documentElement.scrollTop = section.offsetTop;
+                    return
+                }
+
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            },
             onAnchorChange: () => { },
             onMount: () => { },
             onSectionReached: () => { },
@@ -230,7 +237,7 @@
             const anchors = document.querySelectorAll(`${selector} ${anchorSelector}`);
             this.anchors = anchors.length && [...anchors];
             this.nav = document.querySelector(selector)
-            
+
             // temp fix of bug
             setTimeout(() => {
                 this.navScrollWidth = this.nav.scrollWidth
@@ -268,7 +275,7 @@
 
             window.addEventListener('scroll', this.handleScroll);
 
-            this.props.onMount();
+            this.props.onMount(this);
         }
 
         /**
@@ -330,7 +337,7 @@
             this.initial = false
 
             if (this.selectedAnchor !== anchor)
-                onAnchorChange(anchor)
+                onAnchorChange(anchor, this)
 
             this.selectedAnchor = anchor
 
@@ -346,7 +353,9 @@
         handleScroll() {
             if (this.disableScrollHandler) return;
 
-            for (let anchor of this.anchors) {
+            const anchors = this.getAnchorsWithSection()
+
+            for (let anchor of anchors) {
                 const result = this.detectIfSectionIsInViewport(anchor);
 
                 if (result) {
@@ -365,6 +374,8 @@
             if (!section)
                 return
 
+            const { scrollToSection, onSectionReached } = this.props
+
             this.disableScrollHandler = true;
 
             let scrollTimeout;
@@ -375,7 +386,7 @@
 
                 scrollTimeout = setTimeout(() => {
                     if (this.currentSection !== section) {
-                        this.props.onSectionReached(section)
+                        onSectionReached(section, this)
                         this.currentSection = section
                     }
                     this.disableScrollHandler = false;
@@ -385,17 +396,7 @@
 
             window.addEventListener('scroll', checkIfScrollEnded);
 
-            if (this.props.scrollToSection) {
-                this.props.scrollToSection(this, section)
-                return
-            }
-
-            if (!section.scrollIntoView) {
-                document.documentElement.scrollTop = section.offsetTop;
-                return
-            }
-
-            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            scrollToSection(this, section)
         }
 
         /**
@@ -419,7 +420,7 @@
             const result = checkTopBound && checkBottomBound;
 
             if (result && this.currentSection !== section) {
-                this.props.onSectionReached(section)
+                this.props.onSectionReached(section, this)
             }
 
             if (result) {
