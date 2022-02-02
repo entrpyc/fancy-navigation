@@ -1,3 +1,6 @@
+# Example
+https://biotrade.global/our-brands/
+
 # `name-of-package`
 
 Vanilla, lightweight navigation.
